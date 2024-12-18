@@ -207,9 +207,9 @@ func main() {
 			defer sem.Release(1)
 
 			fmt.Printf("Processing project: %s (ID: %d)\n", project.Name, project.ID)
-			changes, err := getChangedLines(project.ID, gitlabURL, privateToken, sinceDate)
-			if err != nil {
-				fmt.Printf("Skipping project %s due to errors: %v\n", project.Name, err)
+			changes, errGetChangedLines := getChangedLines(project.ID, gitlabURL, privateToken, sinceDate)
+			if errGetChangedLines != nil {
+				fmt.Printf("Skipping project %s due to errors: %v\n", project.Name, errGetChangedLines)
 				return
 			}
 
