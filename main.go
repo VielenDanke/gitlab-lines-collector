@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -76,6 +77,7 @@ func getChangedLines(projectID int, gitlabURL, privateToken, since string) (map[
 				fmt.Printf("Error parsing diff stats for commit %s: %v\n", commit.ID, err)
 				continue
 			}
+			commit.AuthorEmail = strings.ToLower(commit.AuthorEmail)
 
 			if _, ok := allChanges[commit.AuthorEmail]; !ok {
 				allChanges[commit.AuthorEmail] = map[string]int{"added": 0, "removed": 0, "total": 0}
