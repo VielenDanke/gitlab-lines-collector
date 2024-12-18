@@ -17,6 +17,7 @@ This Go program retrieves and aggregates lines of code changed (added, removed, 
 * **`PATTERN_TO_FIND`:** (Optional) Regular expression pattern to filter projects by name or path.
 * **`CONCURRENCY_NUMBER`:** (Optional) Number of projects to process concurrently. Defaults to 20 if not set or invalid.
 * **`GITLAB_URL`:** (Optional) The URL of your GitLab instance. Defaults to "https://gitlab.com" if not set.
+* **`PAGE_SIZE`:** (Optional) Page size to fetch all projects. 100 by default if not set.
 
 ## Usage
 

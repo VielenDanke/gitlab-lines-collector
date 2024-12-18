@@ -91,7 +91,7 @@ func getChangedLines(projectID int, gitlabURL, privateToken, since string) (map[
 	return allChanges, nil
 }
 
-func getAllProjects(gitlabURL, privateToken, patternToFind string) ([]Project, error) {
+func getAllProjects(gitlabURL, privateToken, patternToFind, pageSize string) ([]Project, error) {
 	url := fmt.Sprintf("%s/api/v4/projects", gitlabURL)
 	headers := map[string]string{
 		"Authorization": fmt.Sprintf("Bearer %s", privateToken),
@@ -101,7 +101,7 @@ func getAllProjects(gitlabURL, privateToken, patternToFind string) ([]Project, e
 	page := 1
 
 	for {
-		params := fmt.Sprintf("?per_page=100&page=%d&simple=true", page)
+		params := fmt.Sprintf("?per_page=%s&page=%d&simple=true", pageSize, page)
 		resp, err := makeRequest(http.MethodGet, url+params, headers)
 		if err != nil {
 			return nil, err
@@ -160,6 +160,7 @@ func main() {
 	patternToFind := os.Getenv("PATTERN_TO_FIND")
 	concurrencyNumber := os.Getenv("CONCURRENCY_NUMBER")
 	gitlabURL := os.Getenv("GITLAB_URL")
+	pageSize := os.Getenv("PAGE_SIZE")
 
 	if privateToken == "" {
 		fmt.Println("Error: GITLAB_PRIVATE_TOKEN environment variable must be set.")
@@ -185,8 +186,12 @@ func main() {
 		fmt.Println("Gitlab URL is not set. Using default: https://gitlab.com")
 		gitlabURL = "https://gitlab.com"
 	}
+	if _, convErr = strconv.Atoi(pageSize); convErr != nil || pageSize == "" {
+		fmt.Printf("Failed to convert page size %s to int: %v. Pick default 100\n", pageSize, convErr)
+		pageSize = "100"
+	}
 
-	allProjects, errGetAllProjects := getAllProjects(gitlabURL, privateToken, patternToFind)
+	allProjects, errGetAllProjects := getAllProjects(gitlabURL, privateToken, patternToFind, pageSize)
 
 	if errGetAllProjects != nil {
 		fmt.Printf("Error fetching projects: %v\n", errGetAllProjects)
