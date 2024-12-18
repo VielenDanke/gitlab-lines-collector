@@ -102,7 +102,7 @@ func getAllProjects(gitlabURL, privateToken, patternToFind string) ([]Project, e
 
 	for {
 		params := fmt.Sprintf("?per_page=100&page=%d&simple=true", page)
-		resp, err := makeRequest("GET", url+params, headers)
+		resp, err := makeRequest(http.MethodGet, url+params, headers)
 		if err != nil {
 			return nil, err
 		}
@@ -186,7 +186,12 @@ func main() {
 		gitlabURL = "https://gitlab.com"
 	}
 
-	allProjects, err := getAllProjects(gitlabURL, privateToken, patternToFind)
+	allProjects, errGetAllProjects := getAllProjects(gitlabURL, privateToken, patternToFind)
+
+	if errGetAllProjects != nil {
+		fmt.Printf("Error fetching projects: %v\n", errGetAllProjects)
+		os.Exit(1)
+	}
 
 	var wg sync.WaitGroup
 
