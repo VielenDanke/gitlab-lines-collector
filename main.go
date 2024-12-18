@@ -19,6 +19,10 @@ type Commit struct {
 	AuthorEmail string `json:"author_email"`
 }
 
+type Diffs struct {
+	Stats DiffStats `json:"stats"`
+}
+
 type DiffStats struct {
 	Additions int `json:"additions"`
 	Deletions int `json:"deletions"`
@@ -45,7 +49,7 @@ func getChangedLines(projectID int, gitlabURL, privateToken, since string) (map[
 			params += "&since=" + since
 		}
 
-		resp, err := makeRequest("GET", url+params, headers)
+		resp, err := makeRequest(http.MethodGet, url+params, headers)
 		if err != nil {
 			return nil, err
 		}
@@ -60,15 +64,14 @@ func getChangedLines(projectID int, gitlabURL, privateToken, since string) (map[
 
 		for _, commit := range commits {
 			commitURL := fmt.Sprintf("%s/api/v4/projects/%d/repository/commits/%s", gitlabURL, projectID, commit.ID)
-			diffResp, err := makeRequest("GET", commitURL, headers)
+			diffResp, err := makeRequest(http.MethodGet, commitURL, headers)
 			if err != nil {
 				fmt.Printf("Error getting diff for commit %s: %v\n", commit.ID, err)
 				continue
 			}
 
-			var diffs struct {
-				Stats DiffStats `json:"stats"`
-			}
+			diffs := &Diffs{}
+
 			if err := json.Unmarshal(diffResp, &diffs); err != nil {
 				fmt.Printf("Error parsing diff stats for commit %s: %v\n", commit.ID, err)
 				continue
