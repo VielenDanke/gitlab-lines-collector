@@ -174,10 +174,6 @@ func main() {
 	}
 	sinceDate := time.Now().AddDate(0, 0, -sinceDays).Format("2006-01-02")
 
-	if err != nil {
-		fmt.Printf("Error fetching projects: %v\n", err)
-		os.Exit(1)
-	}
 	concurrencyNumberConverted, convErr := strconv.Atoi(concurrencyNumber)
 
 	if convErr != nil {
